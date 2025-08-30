@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTU Medya Oynatıcı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #0a0a0a;
+            --secondary-dark: #1a1a1a;
+            --accent-dark: #2a2a2a;
+            --gtu-blue: #1e3a8a;
+            --gtu-light-blue: #3b82f6;
+            --success-green: #10b981;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --border-color: #374151;
+            --glow-color: #60a5fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-dark);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 49%, rgba(59, 130, 246, 0.03) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(30, 58, 138, 0.03) 50%, transparent 51%);
+            background-size: 100px 100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.8s ease;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gtu-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gtu-blue), var(--gtu-light-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gtu-light-blue), #60a5fa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            font-weight: 400;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 25px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .player-container {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glow-color), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .player-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .player-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--text-light), var(--text-gray));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .player-header p {
+            color: var(--text-gray);
+            font-weight: 400;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            background: var(--secondary-dark);
+        }
+
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: rgba(55, 65, 81, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: var(--gtu-light-blue);
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--gtu-blue), var(--gtu-light-blue));
+            border: 1px solid var(--gtu-light-blue);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn.primary:hover {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .info-panel {
+            margin-top: 40px;
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        .info-panel h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .info-panel p {
+            color: var(--text-gray);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top: 3px solid var(--gtu-light-blue);
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+
+        .loading-text {
+            color: var(--text-gray);
+            font-weight: 500;
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gtu-blue), var(--gtu-light-blue));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+        }
+
+        .copyright {
+            color: var(--text-gray);
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* Animasyonlar */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .brand-text h1 {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .player-container {
+                padding: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                min-width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo-section">
+                <div class="gtu-logo">GTU</div>
+                <div class="brand-text">
+                    <h1>GTU Medya Oynatıcı</h1>
+                    <p>Gebze Teknik Üniversitesi</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Sistem Aktif</span>
+            </div>
+        </nav>
+
+        <div class="player-container">
+            <div class="player-header">
+                <h2>🎬 Canlı Yayın</h2>
+                <p>Yüksek kalitede kesintisiz yayın deneyimi</p>
+            </div>
+
+            <div class="player-wrapper" id="playerWrapper">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Hazırlanıyor...</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn primary" onclick="loadPlayer()">
+                    <i class="fas fa-play"></i>
+                    Yayını Başlat
+                </button>
+                <button class="btn" onclick="reloadPlayer()">
+                    <i class="fas fa-redo"></i>
+                    Yeniden Yükle
+                </button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3><i class="fas fa-broadcast-tower"></i> Yayın Bilgileri</h3>
+            <p>
+                GTU Medya Oynatıcı ile canlı yayınları en iyi kalitede izleyebilirsiniz. 
+                Bağlantı sorunları yaşarsanız "Yeniden Yükle" butonunu kullanın.
+                Sistem 7/24 aktif olarak hizmet vermektedir.
+            </p>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-logo">GTU</div>
+            <div class="copyright">
+                © 2025 EMREÇALIŞKAN - Gebze Teknik Üniversitesi
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let playerLoaded = false;
+        const playerUrl = 'https://playerch2t24.pages.dev/ch?id=yayin1';
+
+        function loadPlayer() {
+            const wrapper = document.getElementById('playerWrapper');
+            if (!playerLoaded) {
+                wrapper.innerHTML = `<iframe src="${playerUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+                playerLoaded = true;
+                
+                // Success animation
+                setTimeout(() => {
+                    wrapper.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        wrapper.style.transform = 'scale(1)';
+                    }, 300);
+                }, 100);
+            }
+        }
+
+        function reloadPlayer() {
+            const wrapper = document.getElementById('playerWrapper');
+            wrapper.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Yeniden yükleniyor...</div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                wrapper.innerHTML = `<iframe src="${playerUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+                playerLoaded = true;
+            }, 1500);
+        }
+
+        // Smooth page load animation
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.6s ease';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Klavye kısayolları
+        document.addEventListener('keydown', function(e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                if (!playerLoaded) {
+                    loadPlayer();
+                }
+            } else if (e.key === 'r' || e.key === 'R') {
+                reloadPlayer();
+            }
+        });
+
+        // Smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>
