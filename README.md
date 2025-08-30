@@ -1,35 +1,84 @@
-# GTÜ Canlı Maç Platformu (İskelet)
+# 🎥 GTÜ Canlı Yayın Platformu
 
-## Proje Yapısı
-- **server/**: Node.js + Express + Socket.IO (TypeScript). E-posta ile giriş (yalnızca @gtu.edu.tr), oda listesi, senkron video durumları, chat, reaksiyon ve WebRTC sinyalleşme iskeleti.
-- **web/**: React + Vite + TailwindCSS (koyu tema). Ana sayfa oda listesi, oda sayfasında HLS player, chat, reaksiyon butonları.
+Modern, gerçek zamanlı canlı yayın izleme platformu. React + Node.js + Socket.IO ile yapılmış.
 
-## Çalıştırma (Geliştirme)
-1. Sunucu
-   - Klasör: `server`
-   - `cp .env.example .env` düzenleyin.
-   - `npm i`
-   - `npm run dev`
-2. İstemci
-   - Klasör: `web`
-   - `cp .env.example .env` düzenleyin (HLS URL). 
-   - `npm i`
-   - `npm run dev`
+## ✨ Özellikler
 
-Varsayılan adresler: API `http://localhost:4000`, Web `http://localhost:5173`.
+- 🔐 **GTU Email ile Giriş** - Sadece @gtu.edu.tr uzantılı emailler
+- 📺 **Canlı Yayın İzleme** - iframe ve HLS desteği  
+- 💬 **Gerçek Zamanlı Chat** - Anlık mesajlaşma
+- ⚡ **Tepki Sistemi** - Emoji tepkiler
+- 👥 **Katılımcı Listesi** - Kim online görebilme
+- 🔧 **Admin Paneli** - Oda oluşturma/düzenleme
+- 📱 **Responsive Tasarım** - Mobile uyumlu
 
-## Özellikler (İskelet)
-- Giriş: `POST /auth/login` — sadece `@gtu.edu.tr` uzantısı kabul edilir. JWT döner.
-- Oda listesi: `GET /rooms`
-- Oda içinde gerçek zamanlılar:
-  - `room:join`, `room:leave`
-  - `chat:message`
-  - `reaction`
-  - `video:state` (yayından gelen), `video:control` (sadece admin)
-  - Sesli sohbet için `voice:*` sinyalleşme olayları (P2P mesh iskeleti)
+## 🚀 Quick Start
 
-## Notlar
-- Video senkronizasyonu: Sunucu tek bir `position + updatedAt + isPlaying` durumu tutar. Katılanlar bu duruma göre otomatik senkronize olur.
-- Play/Pause/Seek kontrolü sadece admin token'ı olanlarda açıktır (örnek: `ADMIN_EMAILS`).
-- Sesli sohbet şu an sinyalleşme iskeleti içerir; tarafa özel `RTCPeerConnection` kurulumu eklenmelidir.
-- Üyeler/profiller/kalıcı veriler için bir veritabanı (ör. Prisma + SQLite/Postgres) eklenebilir.
+### Geliştirme
+```bash
+# Backend
+cd server && npm install && npm run dev
+
+# Frontend (yeni terminal)
+cd web && npm install && npm run dev
+```
+
+**URL'ler:** Backend `http://localhost:4000` | Frontend `http://localhost:5173`
+
+### Production Deploy
+En kolay yöntem **Vercel**:
+1. GitHub'a yükle
+2. [vercel.com](https://vercel.com) → Import Repository
+3. 2 dakikada live! 🎉
+
+Detaylı deployment guide: **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+## 📁 Proje Yapısı
+
+```
+├── web/          # React Frontend (Vite + TypeScript + TailwindCSS)
+├── server/       # Node.js Backend (Express + Socket.IO + TypeScript)
+├── .github/      # GitHub Actions (otomatik deploy)
+└── docs/         # Deployment guides
+```
+
+## 🛠 Tech Stack
+
+**Frontend:**
+- React 18 + TypeScript + Vite
+- TailwindCSS + Framer Motion
+- Socket.IO Client
+- React Router
+
+**Backend:**
+- Node.js + TypeScript + Express
+- Socket.IO (realtime)
+- JWT Authentication
+- Zod (validation)
+
+## 📱 Kullanım
+
+1. **Giriş:** GTU emailin ile giriş yap
+2. **Admin:** Oda oluştur, URL ekle
+3. **İzleyici:** Odaya gir, yayını izle, chat'te konuş
+4. **Tepki:** Emoji ile tepki ver
+
+## 🔧 Environment Variables
+
+**Backend (.env):**
+```env
+JWT_SECRET=your-secret-key
+ADMIN_EMAILS=admin@gtu.edu.tr
+CLIENT_ORIGIN=http://localhost:5173
+```
+
+**Frontend (.env):**
+```env
+VITE_API_URL=http://localhost:4000
+```
+
+---
+
+### 🎯 **Online Demo:** [Yakında...]
+
+Made with ❤️ by **GTU Students**

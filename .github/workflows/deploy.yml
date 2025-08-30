@@ -1,0 +1,31 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install Dependencies (Web)
+      run: cd web && npm install
+      
+    - name: Install Dependencies (Server)  
+      run: cd server && npm install
+      
+    - name: Build Web
+      run: cd web && npm run build
+      
+    - name: Build Server
+      run: cd server && npm run build

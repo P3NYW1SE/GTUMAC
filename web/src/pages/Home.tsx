@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { API_BASE_URL } from '../config'
 import { motion, AnimatePresence } from 'framer-motion'
 
 type Room = { id: string; title: string; viewers: number; isPlaying: boolean }
@@ -8,7 +9,7 @@ export default function Home() {
   const [rooms, setRooms] = useState<Room[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:4000/rooms').then(r=>r.json()).then(setRooms)
+    fetch(`${API_BASE_URL}/rooms`).then(r=>r.json()).then(setRooms)
   }, [])
 
   return (

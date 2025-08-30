@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
+import { API_BASE_URL } from '../config'
 
 function readJwt<T=any>(token: string | null): T | null {
   if (!token) return null
@@ -32,7 +33,7 @@ export default function Room() {
     if (!token || !id) return
 
     console.log('Socket bağlanıyor...')
-    const newSocket = io('http://localhost:4000', {
+    const newSocket = io(API_BASE_URL, {
       auth: { token }
     })
 

@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { API_BASE_URL } from './config'
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'))
@@ -15,7 +16,7 @@ export default function App() {
 
   async function login(e: React.FormEvent) {
     e.preventDefault()
-    const res = await fetch('http://localhost:4000/auth/login', {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, name, department, classYear })
     })

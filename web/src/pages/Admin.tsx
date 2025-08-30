@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_BASE_URL } from '../config'
 
 type Room = { id: string; title: string; hlsUrl?: string }
 
@@ -10,7 +11,7 @@ export default function Admin() {
   const token = localStorage.getItem('token')
 
   async function load() {
-    const r = await fetch('http://localhost:4000/rooms').then(r=>r.json())
+    const r = await fetch(`${API_BASE_URL}/rooms`).then(r=>r.json())
     setRooms(r)
   }
 
@@ -19,7 +20,7 @@ export default function Admin() {
   async function saveRoom(e: React.FormEvent) {
     e.preventDefault()
     if (!token) return
-    const res = await fetch('http://localhost:4000/rooms', {
+    const res = await fetch(`${API_BASE_URL}/rooms`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ id, title, hlsUrl })
     })
@@ -34,7 +35,7 @@ export default function Admin() {
   async function removeRoom(roomId: string) {
     if (!token) return
     if (!confirm('Odayı silmek istediğine emin misin?')) return
-    const res = await fetch(`http://localhost:4000/rooms/${roomId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+    const res = await fetch(`${API_BASE_URL}/rooms/${roomId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
     if (res.ok) await load()
   }
 

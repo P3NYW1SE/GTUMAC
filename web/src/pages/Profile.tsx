@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_BASE_URL } from '../config'
 
 export default function Profile() {
   const [name, setName] = useState('')
@@ -13,7 +14,7 @@ export default function Profile() {
   async function save(e: React.FormEvent) {
     e.preventDefault()
     if (!token) return
-    await fetch('http://localhost:4000/me', {
+    await fetch(`${API_BASE_URL}/me`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ name, department, classYear })
     })
