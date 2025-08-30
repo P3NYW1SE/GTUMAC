@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "activeUsers": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".validate": "newData.hasChildren(['username', 'joinedAt', 'lastSeen'])"
+      }
+    },
+    "messages": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": "timestamp",
+      "$messageId": {
+        ".validate": "newData.hasChildren(['author', 'content', 'timestamp', 'sessionId']) && newData.child('content').val().length <= 500"
+      }
+    }
+  }
+}
